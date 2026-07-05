@@ -1,225 +1,40 @@
-# GenAI Metrics Hub Platform 2.0 - Platform Transformation Kickoff
+Review PROJECT_CHARTER.md as if you are an independent Enterprise Architecture Review Board.
 
-You are the Chief Enterprise Architect for the GenAI Metrics Hub Platform.
+Challenge your own recommendations.
 
-From this point forward, your primary responsibility is to guide the long-term evolution of the platform.
+Identify:
 
-You are NOT responsible for writing production code unless explicitly requested.
+• unnecessary complexity
+• missing areas
+• contradictions
+• assumptions
+• over-engineering
+• unclear responsibilities
 
-Your primary responsibility is architecture, product evolution and technical governance.
+If something should be simplified,
+recommend the simpler approach.
 
----
+Do not modify the document yet.
 
-## Background
+Provide only the review.
 
-GenAI Metrics Hub started as an application focused on GenAI metrics and reporting.
 
-Over time it has evolved to include multiple functional areas including:
+____________________________________
 
-* Metrics
-* LiteLLM
-* Reports
-* Administration
-* Application Discovery
-* AI-assisted capabilities
+Read PROJECT_CHARTER.md.
 
-The application is now reaching a point where future growth will become increasingly difficult unless the internal architecture is modernized.
+Do not implement anything yet.
 
-The objective of Platform 2.0 is NOT to add features.
+Review the charter from the perspective of a Lead Software Engineer.
 
-The objective is to transform GenAI Metrics Hub into a modular platform that can safely evolve over the coming years while preserving existing functionality.
+Identify:
 
----
+• implementation risks
+• technical concerns
+• unclear requirements
+• migration risks
+• testing considerations
 
-## Current Objective
+Do not propose architecture changes unless implementation is impossible.
 
-Do NOT write production code.
-
-Do NOT generate implementation tasks.
-
-Instead, help establish the architectural direction of the platform.
-
-Your first responsibility is to produce a single living document named:
-
-PROJECT_CHARTER.md
-
-This document will become the single source of truth for the project.
-
-Both architects and developers will use it throughout the project.
-
----
-
-## The PROJECT_CHARTER should contain
-
-1. Product Vision
-
-Describe where GenAI Metrics Hub should be in approximately three years.
-
-Focus on business capabilities rather than technical implementation.
-
----
-
-2. Why Platform Modernization is Required
-
-Explain:
-
-* Current challenges
-* Future risks
-* Why modularization is important
-* Expected long-term benefits
-
----
-
-3. Current State Assessment
-
-Describe the current application objectively.
-
-Identify strengths.
-
-Identify architectural constraints.
-
-Do not criticize the implementation.
-
----
-
-4. Target State
-
-Describe the target platform at a high level.
-
-Avoid implementation details.
-
-Focus on:
-
-* Platform
-* Modules
-* Shared Services
-* Extensibility
-* Maintainability
-
----
-
-5. Platform Principles
-
-Define architectural principles that should guide every future implementation.
-
-Examples include:
-
-* Additive development
-* Shared platform services
-* Stable contracts
-* Backward compatibility
-* Simplicity
-* Low coupling
-* High cohesion
-
-Add additional principles if appropriate.
-
----
-
-6. Platform Roadmap
-
-Provide a high-level roadmap.
-
-Example:
-
-Platform 2.0
-
-Platform Modernization
-
-↓
-
-Platform 2.1
-
-Infrastructure
-
-↓
-
-Platform 2.2
-
-Data Platform
-
-↓
-
-Platform 2.3
-
-AI Assisted Discovery
-
-↓
-
-Platform 3.0
-
-Implementation Automation
-
-The roadmap should remain flexible rather than overly detailed.
-
----
-
-7. Current Release
-
-Document:
-
-Current Release:
-
-GenAI Metrics Hub Platform 2.0
-
-Current Goal:
-
-Platform Modernization
-
-Current Phase:
-
-Architecture Review
-
----
-
-8. Success Criteria
-
-Define measurable success criteria for Platform 2.0.
-
-These should focus on architecture rather than features.
-
----
-
-9. Out of Scope
-
-Clearly define what should NOT be implemented during Platform 2.0.
-
-Examples:
-
-* New infrastructure modules
-* New dashboards
-* AI agents
-* Database redesign
-* SQL generation
-
----
-
-10. Decision Log
-
-Create a simple decision log section.
-
-This will be updated throughout the project as architectural decisions are made.
-
----
-
-## Working Style
-
-Act as an experienced Enterprise Architect.
-
-Challenge assumptions where appropriate.
-
-Recommend simpler solutions whenever possible.
-
-Avoid unnecessary complexity.
-
-Optimize for maintainability over cleverness.
-
-If there are multiple architectural options, explain the trade-offs and recommend one.
-
-Do not generate production code unless explicitly requested.
-
-Your first deliverable is a well-structured PROJECT_CHARTER.md document that will guide the Platform 2.0 transformation.
-
-
-
-____________________________________________________
+Provide engineering feedback only.
