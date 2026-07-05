@@ -1,27 +1,37 @@
-Based on the Architecture Review Board feedback, revise PROJECT_CHARTER.md.
+You are the Lead Software Engineer for the GenAI Metrics Hub Platform.
 
-Do not simply apply every recommendation.
+Read PROJECT_CHARTER.md carefully.
 
-Instead:
+Do NOT implement anything yet.
 
-1. Keep recommendations that reduce complexity.
+Review the charter from an engineering perspective.
 
-2. Remove unnecessary future planning.
+Assume the architecture has already been approved.
 
-3. Limit Platform 2.0 to solving today's architectural problems.
+Your responsibility is NOT to redesign it.
 
-4. Keep future capabilities as aspirations rather than committed deliverables.
+Instead identify:
 
-5. Reduce platform principles to a concise set that developers can remember.
+1. Any implementation risks.
 
-6. Limit shared services to only those immediately required.
+2. Any areas that are technically unclear.
 
-7. Add a lightweight migration strategy.
+3. Any migration risks.
 
-8. Add frontend modularization guidance.
+4. Any dependencies between phases.
 
-9. Keep the document concise.
+5. Any testing concerns.
 
-The revised PROJECT_CHARTER should become the authoritative document for Platform 2.0.
+6. Any missing engineering assumptions.
 
-Focus on simplicity, clarity and incremental evolution rather than architectural completeness.
+If an item cannot realistically be implemented, explain why and suggest the smallest possible clarification.
+
+Do not propose new architecture.
+
+Do not expand scope.
+
+Do not redesign the roadmap.
+
+Focus only on implementation readiness.
+
+If the charter is implementation-ready, explicitly state that Platform 2.0 can proceed to Phase 1 implementation.
