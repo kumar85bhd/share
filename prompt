@@ -1,40 +1,27 @@
-Review PROJECT_CHARTER.md as if you are an independent Enterprise Architecture Review Board.
+Based on the Architecture Review Board feedback, revise PROJECT_CHARTER.md.
 
-Challenge your own recommendations.
+Do not simply apply every recommendation.
 
-Identify:
+Instead:
 
-• unnecessary complexity
-• missing areas
-• contradictions
-• assumptions
-• over-engineering
-• unclear responsibilities
+1. Keep recommendations that reduce complexity.
 
-If something should be simplified,
-recommend the simpler approach.
+2. Remove unnecessary future planning.
 
-Do not modify the document yet.
+3. Limit Platform 2.0 to solving today's architectural problems.
 
-Provide only the review.
+4. Keep future capabilities as aspirations rather than committed deliverables.
 
+5. Reduce platform principles to a concise set that developers can remember.
 
-____________________________________
+6. Limit shared services to only those immediately required.
 
-Read PROJECT_CHARTER.md.
+7. Add a lightweight migration strategy.
 
-Do not implement anything yet.
+8. Add frontend modularization guidance.
 
-Review the charter from the perspective of a Lead Software Engineer.
+9. Keep the document concise.
 
-Identify:
+The revised PROJECT_CHARTER should become the authoritative document for Platform 2.0.
 
-• implementation risks
-• technical concerns
-• unclear requirements
-• migration risks
-• testing considerations
-
-Do not propose architecture changes unless implementation is impossible.
-
-Provide engineering feedback only.
+Focus on simplicity, clarity and incremental evolution rather than architectural completeness.
