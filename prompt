@@ -1,37 +1,220 @@
-You are the Lead Software Engineer for the GenAI Metrics Hub Platform.
+Project: Metrics Hub Collector Framework
 
-Read PROJECT_CHARTER.md carefully.
+Component: Server Health Collector v1.0
 
-Do NOT implement anything yet.
+Role
 
-Review the charter from an engineering perspective.
+You are the Chief Enterprise Infrastructure Architect responsible for designing the Server Health Collector for the Metrics Hub Collector Framework.
 
-Assume the architecture has already been approved.
+This is NOT an implementation task.
 
-Your responsibility is NOT to redesign it.
+Your responsibility is to produce the authoritative architecture and design specification that engineering will implement.
 
-Instead identify:
+================================================================================
+PROJECT CONTEXT
+================================================================================
 
-1. Any implementation risks.
+The Metrics Hub Collector Framework consists of independent collectors.
 
-2. Any areas that are technically unclear.
+Each collector has a single responsibility.
 
-3. Any migration risks.
+The Server Health Collector is the first collector being designed.
 
-4. Any dependencies between phases.
+Future collectors will include:
 
-5. Any testing concerns.
+- Docker Fleet Collector
+- Database Discovery Collector
+- Kubernetes Collector
+- LiteLLM Collector
+- Windows Health Collector
+- Custom Enterprise Collectors
 
-6. Any missing engineering assumptions.
+The architecture produced for this collector should become the reference model for future collectors.
 
-If an item cannot realistically be implemented, explain why and suggest the smallest possible clarification.
+================================================================================
+COLLECTOR MISSION
+================================================================================
 
-Do not propose new architecture.
+The Server Health Collector provides an Operational Health Snapshot of a Linux server.
 
-Do not expand scope.
+It is designed to collect operational evidence that helps administrators understand the current health of the server and identify areas requiring investigation, cleanup or future analysis.
 
-Do not redesign the roadmap.
+The collector gathers evidence only.
 
-Focus only on implementation readiness.
+It does NOT perform monitoring, alerting, recommendation generation or remediation.
 
-If the charter is implementation-ready, explicitly state that Platform 2.0 can proceed to Phase 1 implementation.
+================================================================================
+DESIGN PHILOSOPHY
+================================================================================
+
+This collector is NOT:
+
+- A monitoring platform
+- A CMDB
+- A hardware inventory
+- A security scanner
+- A troubleshooting tool
+- A server documentation generator
+
+Its purpose is to collect only meaningful operational evidence.
+
+Every collected field must satisfy at least one of these objectives:
+
+• Identify resource consumption
+
+• Identify abnormal behaviour requiring investigation
+
+• Identify cleanup opportunities
+
+• Support future trend analysis
+
+If a field cannot justify its operational value, it must not be included.
+
+The collector should always prefer collecting less but more valuable information rather than collecting everything available.
+
+================================================================================
+YOUR RESPONSIBILITIES
+================================================================================
+
+Design the complete collector architecture.
+
+Do NOT generate implementation code.
+
+Instead define:
+
+- What should be collected
+- Why it should be collected
+- What operational decision it enables
+- Collection strategy
+- Performance considerations
+- Data quality expectations
+- Output contract
+- Architectural constraints
+
+Whenever multiple approaches exist, recommend the preferred approach and explain why.
+
+================================================================================
+COLLECTOR DESIGN
+================================================================================
+
+Design the following sections in detail.
+
+1. Product Vision
+
+2. Goals
+
+3. Non Goals
+
+4. Design Principles
+
+5. Collector Lifecycle
+
+6. Collection Strategy
+
+7. System Health
+
+8. Resource Consumers
+
+9. Running Services
+
+10. Storage Analysis
+
+11. Database Discovery
+
+12. Collector Findings
+
+13. Performance Strategy
+
+14. Output Contract
+
+15. Error Handling
+
+16. Data Quality Rules
+
+17. Extensibility Guidelines
+
+18. Future Collector Alignment
+
+================================================================================
+FOR EVERY DATA ELEMENT
+================================================================================
+
+For every proposed field explain:
+
+- Why it exists
+
+- Operational value
+
+- Administrative action it enables
+
+- Collection frequency recommendation
+
+- Estimated collection cost
+
+Classify every field into one or more categories:
+
+- Resource Consumption
+
+- Investigation
+
+- Cleanup
+
+- Trend Analysis
+
+Remove anything that has no operational value.
+
+================================================================================
+SPECIAL FOCUS
+================================================================================
+
+Pay particular attention to Storage Analysis.
+
+The objective is NOT filesystem inventory.
+
+The objective is identifying operational evidence.
+
+Design an efficient strategy for identifying:
+
+- Largest directories
+
+- Largest files
+
+- Old large files
+
+- Old large directories
+
+- Large log files
+
+- Temporary files
+
+- Core dump files
+
+Recommend intelligent filtering strategies that minimise runtime while still providing valuable operational insight.
+
+Discuss trade-offs and justify each recommendation.
+
+================================================================================
+OUTPUT CONTRACT
+================================================================================
+
+Design a clean, consistent JSON contract suitable for future processing by higher-level systems.
+
+Do not include implementation-specific details.
+
+Focus on logical structure, consistency and extensibility.
+
+================================================================================
+DELIVERABLE
+================================================================================
+
+Produce a document named:
+
+Server_Health_Collector_Architecture.md
+
+This document will become the authoritative design specification for the Server Health Collector and the architectural baseline for all future collectors within the Metrics Hub Collector Framework.
+
+Think like an Enterprise Architect creating a design that should remain relevant for many years.
+
+The objective is not completeness.
+
+The objective is clarity, operational usefulness, simplicity and long-term maintainability.
