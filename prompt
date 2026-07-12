@@ -1,220 +1,152 @@
-Project: Metrics Hub Collector Framework
+# UI Enhancement – Validation Dashboard
 
-Component: Server Health Collector v1.0
+The current implementation of the Application Validator is functionally complete for the initial MVP.
 
-Role
+The next objective is to improve usability and make the page feel like an Enterprise Application Health Dashboard rather than a testing utility.
 
-You are the Chief Enterprise Infrastructure Architect responsible for designing the Server Health Collector for the Metrics Hub Collector Framework.
+Please implement the following enhancements.
 
-This is NOT an implementation task.
+---
 
-Your responsibility is to produce the authoritative architecture and design specification that engineering will implement.
+## 1. Rename Labels
 
-================================================================================
-PROJECT CONTEXT
-================================================================================
+Update the UI terminology.
 
-The Metrics Hub Collector Framework consists of independent collectors.
+Run Validation
+→ Validate Application
 
-Each collector has a single responsibility.
+Run All Apps
+→ Validate All
 
-The Server Health Collector is the first collector being designed.
+Page Load
+→ Load Time
 
-Future collectors will include:
+Content Paint
+→ LCP
 
-- Docker Fleet Collector
-- Database Discovery Collector
-- Kubernetes Collector
-- LiteLLM Collector
-- Windows Health Collector
-- Custom Enterprise Collectors
+First Paint
+→ FCP (or First Paint if abbreviations reduce clarity)
 
-The architecture produced for this collector should become the reference model for future collectors.
+Net Err
+→ Network
 
-================================================================================
-COLLECTOR MISSION
-================================================================================
+Con Err
+→ Console
 
-The Server Health Collector provides an Operational Health Snapshot of a Linux server.
+Broken Img
+→ Images
 
-It is designed to collect operational evidence that helps administrators understand the current health of the server and identify areas requiring investigation, cleanup or future analysis.
+---
 
-The collector gathers evidence only.
+## 2. Improve Table Readability
 
-It does NOT perform monitoring, alerting, recommendation generation or remediation.
+Review the table columns for first-time usability.
 
-================================================================================
-DESIGN PHILOSOPHY
-================================================================================
+The objective is that an administrator should understand every column without needing documentation.
 
-This collector is NOT:
+Where appropriate:
 
-- A monitoring platform
-- A CMDB
-- A hardware inventory
-- A security scanner
-- A troubleshooting tool
-- A server documentation generator
+- Improve column names
+- Improve tooltips
+- Keep the table compact
+- Maintain high information density
 
-Its purpose is to collect only meaningful operational evidence.
+Do not increase table width unnecessarily.
 
-Every collected field must satisfy at least one of these objectives:
+---
 
-• Identify resource consumption
+## 3. Summary Dashboard
 
-• Identify abnormal behaviour requiring investigation
+Introduce a dashboard section above the Validation Reports table.
 
-• Identify cleanup opportunities
+Purpose:
 
-• Support future trend analysis
+Allow administrators to understand overall Workspace health within a few seconds.
 
-If a field cannot justify its operational value, it must not be included.
+Suggested cards:
 
-The collector should always prefer collecting less but more valuable information rather than collecting everything available.
+Applications
 
-================================================================================
-YOUR RESPONSIBILITIES
-================================================================================
+Healthy
 
-Design the complete collector architecture.
+Warnings
 
-Do NOT generate implementation code.
+Failed
 
-Instead define:
+Average Load Time
 
-- What should be collected
-- Why it should be collected
-- What operational decision it enables
-- Collection strategy
-- Performance considerations
-- Data quality expectations
-- Output contract
-- Architectural constraints
+Average LCP
 
-Whenever multiple approaches exist, recommend the preferred approach and explain why.
+Network Errors
 
-================================================================================
-COLLECTOR DESIGN
-================================================================================
+Console Errors
 
-Design the following sections in detail.
+Success Rate
 
-1. Product Vision
+Last Validation Time
 
-2. Goals
+Design the layout so it remains compact and visually consistent with the existing Admin Dashboard.
 
-3. Non Goals
+---
 
-4. Design Principles
+## 4. Validation Details
 
-5. Collector Lifecycle
+Review the Validation Details page.
 
-6. Collection Strategy
+Suggest improvements to make the information easier to scan.
 
-7. System Health
+Particularly review:
 
-8. Resource Consumers
+- Validation Checks
+- Performance Metrics
+- Console Errors
+- Network Errors
+- Screenshot section
 
-9. Running Services
+Recommend better grouping where appropriate.
 
-10. Storage Analysis
+---
 
-11. Database Discovery
+## 5. Status Labels
 
-12. Collector Findings
+Review the terminology used for PASS, WARN, FAIL and SKIP.
 
-13. Performance Strategy
+Determine whether SKIP should become:
 
-14. Output Contract
+- N/A
 
-15. Error Handling
+- Not Configured
 
-16. Data Quality Rules
+- Optional
 
-17. Extensibility Guidelines
+or another term that better communicates why the validation did not execute.
 
-18. Future Collector Alignment
+---
 
-================================================================================
-FOR EVERY DATA ELEMENT
-================================================================================
+## 6. UX Review
 
-For every proposed field explain:
+Review the overall page from the perspective of a Workspace Administrator.
 
-- Why it exists
+The administrator should immediately answer three questions:
 
-- Operational value
+1. Is my Workspace healthy?
 
-- Administrative action it enables
+2. Which applications require attention?
 
-- Collection frequency recommendation
+3. Why did they fail?
 
-- Estimated collection cost
+Every design decision should optimize for answering those three questions.
 
-Classify every field into one or more categories:
+---
 
-- Resource Consumption
+## Constraints
 
-- Investigation
+Do not redesign the overall page.
 
-- Cleanup
+Do not introduce unnecessary complexity.
 
-- Trend Analysis
+Preserve the existing architecture.
 
-Remove anything that has no operational value.
+Improve clarity, consistency and usability while maintaining the current enterprise look and feel.
 
-================================================================================
-SPECIAL FOCUS
-================================================================================
-
-Pay particular attention to Storage Analysis.
-
-The objective is NOT filesystem inventory.
-
-The objective is identifying operational evidence.
-
-Design an efficient strategy for identifying:
-
-- Largest directories
-
-- Largest files
-
-- Old large files
-
-- Old large directories
-
-- Large log files
-
-- Temporary files
-
-- Core dump files
-
-Recommend intelligent filtering strategies that minimise runtime while still providing valuable operational insight.
-
-Discuss trade-offs and justify each recommendation.
-
-================================================================================
-OUTPUT CONTRACT
-================================================================================
-
-Design a clean, consistent JSON contract suitable for future processing by higher-level systems.
-
-Do not include implementation-specific details.
-
-Focus on logical structure, consistency and extensibility.
-
-================================================================================
-DELIVERABLE
-================================================================================
-
-Produce a document named:
-
-Server_Health_Collector_Architecture.md
-
-This document will become the authoritative design specification for the Server Health Collector and the architectural baseline for all future collectors within the Metrics Hub Collector Framework.
-
-Think like an Enterprise Architect creating a design that should remain relevant for many years.
-
-The objective is not completeness.
-
-The objective is clarity, operational usefulness, simplicity and long-term maintainability.
+Think like a UX Architect designing an Enterprise Operations Dashboard rather than a testing application.
