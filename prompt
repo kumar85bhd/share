@@ -1,152 +1,409 @@
-# UI Enhancement – Validation Dashboard
+You are acting as a Senior DevOps Engineer, Docker Platform Engineer, SRE, and Product Reviewer.
 
-The current implementation of the Application Validator is functionally complete for the initial MVP.
+Review the CURRENT Docker monitoring/intelligence capability in Metrics Hub as if it must be presented to technical stakeholders this Friday.
 
-The next objective is to improve usability and make the page feel like an Enterprise Application Health Dashboard rather than a testing utility.
+This is a FOCUSED READINESS REVIEW.
+
+Do NOT redesign the application.
+Do NOT implement anything.
+Do NOT create a broad future roadmap.
+Do NOT recommend features merely because other Docker platforms have them.
+Do NOT try to turn this application into a replacement for Portainer.
+
+Inspect the actual:
+
+- Frontend implementation
+- Backend implementation
+- Collector/data ingestion logic
+- Current JSON/data schema
+- Metric calculations
+- Classification rules
+- UI labels and explanations
+
+The application must answer three primary questions:
+
+    1. ARE WE GOOD OR NOT GOOD?
+
+    2. IF NOT GOOD, WHAT EXACTLY IS CONCERNING?
 
-Please implement the following enhancements.
+    3. FOR EACH CONCERN, WHAT ARE REASONABLE NEXT STEPS?
+
+The review must test whether the current application genuinely answers these questions using trustworthy evidence.
+
+--------------------------------------------------
+1. PRIMARY PRODUCT TEST
+--------------------------------------------------
 
----
+A user looking at the Docker view should be able to understand:
+
+    CURRENT STATE
+        ↓
+    HEALTH / EFFICIENCY ASSESSMENT
+        ↓
+    CONCERNS
+        ↓
+    EVIDENCE
+        ↓
+    POSSIBLE NEXT STEPS
+
+Example:
+
+    65 Containers
+        ↓
+    42 Running
+    15 Stopped
+    8 Review Candidates
+        ↓
+    Why are 8 review candidates?
+        ↓
+    Stopped for a long period / unused image / high resource use / other evidence
+        ↓
+    Possible next step:
+    Review ownership and confirm whether the container is still required
 
-## 1. Rename Labels
+The application should NOT make destructive decisions automatically.
 
-Update the UI terminology.
+Prefer:
+
+    Review
+    Investigate
+    Verify ownership
+    Confirm usage
+    Consider cleanup
 
-Run Validation
-→ Validate Application
+Avoid unsupported conclusions such as:
 
-Run All Apps
-→ Validate All
+    Safe to delete
+    Definitely unused
+    Must remove
+
+--------------------------------------------------
+2. STRICTLY REVIEW THE CURRENT DOCKER METRICS
+--------------------------------------------------
+
+Review every currently displayed Docker metric and classification.
+
+For each one, answer:
+
+1. What does this metric claim to tell the user?
+2. Is the calculation technically correct?
+3. Is the label accurate?
+4. Can the data actually support the conclusion being presented?
+5. Can the user understand whether the result is good or concerning?
+6. If concerning, can the user see exactly which containers/images/volumes are responsible?
+7. Is there enough evidence to investigate?
+8. Are the suggested next steps reasonable and safe?
+
+Pay particular attention to currently available areas such as:
+
+- Total containers
+- Running containers
+- Stopped containers
+- Container state/status
+- CPU usage
+- Memory usage
+- Container age
+- Restart count
+- Images
+- Volumes
+- Networks
+- Disk usage
+- Potential cleanup/reclaimable space
+- Stale or review-candidate classifications
+- Per-server and cross-server aggregation
+
+Only review metrics that actually exist in the current implementation.
+
+Do not assume the application has all of the above.
+
+--------------------------------------------------
+3. TEST THE "GOOD OR NOT GOOD" QUESTION
+--------------------------------------------------
+
+Determine whether the application can currently give a meaningful overall assessment.
 
-Page Load
-→ Load Time
+Examples of potentially healthy conditions:
 
-Content Paint
-→ LCP
+- Expected containers are running
+- No abnormal restart behavior
+- Resource consumption is within reasonable limits
+- No major unexplained Docker storage growth
+- No significant accumulation of stopped containers
+- No obvious large cleanup candidates
 
-First Paint
-→ FCP (or First Paint if abbreviations reduce clarity)
+Examples of concerns:
+
+- Containers repeatedly restarting
+- Containers unexpectedly stopped
+- Very high CPU or memory consumption
+- Large numbers of long-stopped containers
+- Large unused or dangling images
+- Large unused volumes
+- Docker storage consuming excessive disk
+- Large reclaimable storage
+- One server significantly different from others
 
-Net Err
-→ Network
+IMPORTANT:
 
-Con Err
-→ Console
+Do not invent a health formula simply because one does not exist.
 
-Broken Img
-→ Images
+If the current application cannot reliably produce an overall Docker health status, say so.
 
----
+Recommend the MINIMUM improvement required.
 
-## 2. Improve Table Readability
+--------------------------------------------------
+4. CONCERN → EVIDENCE → POSSIBLE ACTION
+--------------------------------------------------
 
-Review the table columns for first-time usability.
+For every concern displayed by the application, test whether this chain exists:
 
-The objective is that an administrator should understand every column without needing documentation.
+    CONCERN
+        ↓
+    WHAT EXACTLY IS AFFECTED?
+        ↓
+    WHY IS IT CONSIDERED A CONCERN?
+        ↓
+    WHAT EVIDENCE SUPPORTS THAT?
+        ↓
+    WHAT ARE REASONABLE NEXT STEPS?
 
-Where appropriate:
+Example:
 
-- Improve column names
-- Improve tooltips
-- Keep the table compact
-- Maintain high information density
+    Concern:
+    12 stopped containers
 
-Do not increase table width unnecessarily.
+    Evidence:
+    Container names
+    Server
+    Status
+    Created date
+    Last known running information, if available
+    Associated image
+    Associated volume, if available
 
----
+    Possible next steps:
+    - Confirm application ownership
+    - Confirm whether the container is still required
+    - Check dependent volumes
+    - Remove only after verification
 
-## 3. Summary Dashboard
+Another example:
 
-Introduce a dashboard section above the Validation Reports table.
+    Concern:
+    Docker storage is consuming 420 GB
 
-Purpose:
+    Evidence:
+    Images: X GB
+    Containers: X GB
+    Volumes: X GB
+    Build cache: X GB
 
-Allow administrators to understand overall Workspace health within a few seconds.
+    Possible next steps:
+    - Review largest consumers
+    - Identify unused images
+    - Verify unused volumes
+    - Consider cleanup after ownership validation
 
-Suggested cards:
+Do not add these examples blindly.
 
-Applications
+Verify what the current data can actually support.
 
-Healthy
+--------------------------------------------------
+5. CROSS-SERVER VALUE
+--------------------------------------------------
 
-Warnings
+A major purpose of this application is to provide consolidated visibility across multiple servers.
 
-Failed
+Evaluate whether the current Docker view answers:
 
-Average Load Time
+    Which server needs attention?
 
-Average LCP
+    Why does that server need attention?
 
-Network Errors
+    What Docker resources are responsible?
 
-Console Errors
+The user should ideally be able to move from:
 
-Success Rate
+    ALL SERVERS
+        ↓
+    SERVER WITH CONCERN
+        ↓
+    SPECIFIC DOCKER ISSUE
+        ↓
+    AFFECTED RESOURCE
+        ↓
+    POSSIBLE NEXT STEP
 
-Last Validation Time
+Determine whether this currently works.
 
-Design the layout so it remains compact and visually consistent with the existing Admin Dashboard.
+--------------------------------------------------
+6. PORTAINER BOUNDARY
+--------------------------------------------------
 
----
+This application should NOT duplicate Portainer unnecessarily.
 
-## 4. Validation Details
+For every proposed improvement, ask:
 
-Review the Validation Details page.
+    Is this needed to understand the estate and identify concerns?
 
-Suggest improvements to make the information easier to scan.
+or:
 
-Particularly review:
+    Is this operational container management better left to Portainer?
 
-- Validation Checks
-- Performance Metrics
-- Console Errors
-- Network Errors
-- Screenshot section
+Metrics Hub should focus on:
 
-Recommend better grouping where appropriate.
+- Consolidated visibility
+- Cross-server understanding
+- Health/efficiency assessment
+- Identification of concerns
+- Evidence
+- Prioritized investigation
+- Possible next steps
 
----
+Container lifecycle operations such as:
 
-## 5. Status Labels
+- Start
+- Stop
+- Delete
+- Recreate
+- Edit configuration
 
-Review the terminology used for PASS, WARN, FAIL and SKIP.
+should not be introduced merely to compete with Portainer.
 
-Determine whether SKIP should become:
+--------------------------------------------------
+7. FRIDAY PRESENTATION READINESS
+--------------------------------------------------
 
-- N/A
+Evaluate whether the current Docker capability is ready to demonstrate.
 
-- Not Configured
+Classify every issue as:
 
-- Optional
+BLOCKER
+- Incorrect or misleading data
+- Broken calculation
+- Broken UI
+- A conclusion unsupported by evidence
+- A key demo flow that does not work
 
-or another term that better communicates why the validation did not execute.
+MUST FIX BEFORE FRIDAY
+- Important clarity issue
+- Missing drill-down required to explain a major concern
+- Incorrect label
+- Data inconsistency
+- Cross-server aggregation problem
 
----
+NICE TO HAVE
+- Useful but not required for the presentation
 
-## 6. UX Review
+AFTER FRIDAY
+- Larger enhancement
+- New collector
+- Major architecture change
+- Advanced intelligence
 
-Review the overall page from the perspective of a Workspace Administrator.
+Be strict.
 
-The administrator should immediately answer three questions:
+Do not classify everything as a blocker.
 
-1. Is my Workspace healthy?
+--------------------------------------------------
+8. REQUIRED OUTPUT
+--------------------------------------------------
 
-2. Which applications require attention?
+Produce:
 
-3. Why did they fail?
+A. EXECUTIVE VERDICT
 
-Every design decision should optimize for answering those three questions.
+Answer directly:
 
----
+    Can the current Docker application tell us:
+    - Are we good or not good?
+    - What is concerning?
+    - Why is it concerning?
+    - What can we reasonably do next?
 
-## Constraints
+Rate each question:
 
-Do not redesign the overall page.
+    YES
+    PARTIALLY
+    NO
 
-Do not introduce unnecessary complexity.
+Explain why.
 
-Preserve the existing architecture.
+B. METRIC VALIDATION TABLE
 
-Improve clarity, consistency and usability while maintaining the current enterprise look and feel.
+For every major current metric:
 
-Think like a UX Architect designing an Enterprise Operations Dashboard rather than a testing application.
+| Metric | Calculation Correct? | Label Accurate? | Decision Value | Concern Drill-Down Available? | Actionable? | Issue |
+
+C. CURRENT CONCERNS MODEL
+
+List the concerns the current application can reliably identify today.
+
+For each:
+
+| Concern | Evidence Available | Confidence | Possible Next Steps |
+
+D. MISSING CRITICAL CONTEXT
+
+Identify only the missing information that prevents a current metric or concern from being understood.
+
+Do not produce a feature wishlist.
+
+E. FRIDAY FIX LIST
+
+Provide a strict list:
+
+    BLOCKER
+    MUST FIX
+    NICE TO HAVE
+    AFTER FRIDAY
+
+F. DEMO STORY
+
+Based on the actual current application, propose a short demonstration flow:
+
+    Estate Summary
+        ↓
+    Identify Server/Area of Concern
+        ↓
+    Show Evidence
+        ↓
+    Explain Possible Next Step
+
+Use actual capabilities found in the application.
+
+--------------------------------------------------
+9. EXECUTION GATE
+--------------------------------------------------
+
+THIS TASK IS ANALYSIS ONLY.
+
+Do not:
+
+- Modify files
+- Write code
+- Refactor
+- Install dependencies
+- Change calculations
+- Change the UI
+- Add collectors
+
+Inspect the actual implementation and produce the review.
+
+Be critical but practical.
+
+The goal is not perfection.
+
+The goal for Friday is:
+
+    TRUSTWORTHY DATA
+        +
+    CLEAR HEALTH / EFFICIENCY SIGNAL
+        +
+    IDENTIFIABLE CONCERNS
+        +
+    ENOUGH EVIDENCE TO EXPLAIN THEM
+        +
+    REASONABLE NEXT STEPS
+
+STOP after producing the review.
