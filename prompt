@@ -1,44 +1,62 @@
-You are acting as a Senior DevOps Engineer, Docker Platform Engineer, SRE, and Product Reviewer.
+You are acting as a Senior Linux Systems Engineer, DevOps Engineer, SRE, and Product Reviewer.
 
-Review the CURRENT Docker monitoring/intelligence capability in Metrics Hub as if it must be presented to technical stakeholders this Friday.
+Review the CURRENT Server Health capability in Metrics Hub as if it must be presented to technical stakeholders this Friday.
+
+Before starting, read and follow:
+
+@docs/plans/SERVER_HEALTH_INFORMATION_DEPTH_PLAN.md
+
+Use that document as the governing product principle.
 
 This is a FOCUSED READINESS REVIEW.
 
 Do NOT redesign the application.
 Do NOT implement anything.
 Do NOT create a broad future roadmap.
-Do NOT recommend features merely because other Docker platforms have them.
-Do NOT try to turn this application into a replacement for Portainer.
+Do NOT attempt to compete feature-for-feature with Netdata, Beszel, Cockpit, or ManageEngine.
 
 Inspect the actual:
 
 - Frontend implementation
 - Backend implementation
-- Collector/data ingestion logic
+- Server collector
 - Current JSON/data schema
 - Metric calculations
+- Health score logic
 - Classification rules
 - UI labels and explanations
 
 The application must answer three primary questions:
 
-    1. ARE WE GOOD OR NOT GOOD?
+    1. IS MY SERVER GOOD OR NOT GOOD?
 
     2. IF NOT GOOD, WHAT EXACTLY IS CONCERNING?
 
     3. FOR EACH CONCERN, WHAT ARE REASONABLE NEXT STEPS?
 
-The review must test whether the current application genuinely answers these questions using trustworthy evidence.
+The review must determine whether the current application genuinely answers these questions using trustworthy evidence.
+
+The governing information-depth model remains:
+
+    SUMMARY
+        ↓
+    EVIDENCE
+        ↓
+    CONTEXT
+
+For Friday, focus on whether this chain works for the IMPORTANT current metrics.
+
+Do not attempt to make every metric perfect.
 
 --------------------------------------------------
 1. PRIMARY PRODUCT TEST
 --------------------------------------------------
 
-A user looking at the Docker view should be able to understand:
+A user looking at a server should be able to understand:
 
-    CURRENT STATE
+    CURRENT SERVER STATE
         ↓
-    HEALTH / EFFICIENCY ASSESSMENT
+    HEALTH ASSESSMENT
         ↓
     CONCERNS
         ↓
@@ -48,114 +66,119 @@ A user looking at the Docker view should be able to understand:
 
 Example:
 
-    65 Containers
+    Health Score: 75 — Warning
         ↓
-    42 Running
-    15 Stopped
-    8 Review Candidates
+    Why?
         ↓
-    Why are 8 review candidates?
+    4 failed services
+    High swap usage
         ↓
-    Stopped for a long period / unused image / high resource use / other evidence
+    Which services?
+    What is the swap situation?
         ↓
-    Possible next step:
-    Review ownership and confirm whether the container is still required
+    Relevant evidence
+        ↓
+    Possible next steps
 
-The application should NOT make destructive decisions automatically.
+The application should not jump directly from:
 
-Prefer:
+    Metric
+        ↓
+    Destructive action
 
-    Review
-    Investigate
-    Verify ownership
-    Confirm usage
-    Consider cleanup
-
-Avoid unsupported conclusions such as:
-
-    Safe to delete
-    Definitely unused
-    Must remove
+It should provide enough evidence for investigation.
 
 --------------------------------------------------
-2. STRICTLY REVIEW THE CURRENT DOCKER METRICS
+2. STRICTLY VALIDATE CURRENT HEALTH METRICS
 --------------------------------------------------
 
-Review every currently displayed Docker metric and classification.
+Review every currently displayed Server Health metric.
 
-For each one, answer:
+For each metric, determine:
 
-1. What does this metric claim to tell the user?
-2. Is the calculation technically correct?
+1. What does it claim to tell the user?
+2. Is the underlying calculation technically correct?
 3. Is the label accurate?
-4. Can the data actually support the conclusion being presented?
-5. Can the user understand whether the result is good or concerning?
-6. If concerning, can the user see exactly which containers/images/volumes are responsible?
-7. Is there enough evidence to investigate?
-8. Are the suggested next steps reasonable and safe?
+4. Is the threshold reasonable?
+5. Does the metric represent a snapshot or a historical conclusion?
+6. Is the application accidentally presenting snapshot data as long-term evidence?
+7. Can the user determine whether the result is healthy or concerning?
+8. If concerning, can the user identify the cause?
+9. Is there enough context to investigate?
+10. Are possible next steps reasonable?
 
-Pay particular attention to currently available areas such as:
+Pay particular attention to current areas such as:
 
-- Total containers
-- Running containers
-- Stopped containers
-- Container state/status
-- CPU usage
-- Memory usage
-- Container age
-- Restart count
-- Images
-- Volumes
-- Networks
-- Disk usage
-- Potential cleanup/reclaimable space
-- Stale or review-candidate classifications
-- Per-server and cross-server aggregation
+- Overall Health Score
+- Health Score deductions
+- CPU
+- Memory
+- Swap
+- Disk
+- System Load
+- Failed Services
+- GPU
+- Top CPU Processes
+- Top Memory Processes
+- Connections
+- Databases
+- Listening Ports
+- Largest Directories
+- Largest Files
+- Dormant Directories
+- Disk Tree, if already implemented
 
-Only review metrics that actually exist in the current implementation.
+Only review what actually exists.
 
-Do not assume the application has all of the above.
+Do not assume all of the above are implemented.
 
 --------------------------------------------------
 3. TEST THE "GOOD OR NOT GOOD" QUESTION
 --------------------------------------------------
 
-Determine whether the application can currently give a meaningful overall assessment.
+Determine whether the current overall Health Score and status genuinely answer:
 
-Examples of potentially healthy conditions:
+    Is this server healthy?
 
-- Expected containers are running
-- No abnormal restart behavior
-- Resource consumption is within reasonable limits
-- No major unexplained Docker storage growth
-- No significant accumulation of stopped containers
-- No obvious large cleanup candidates
+Validate:
 
-Examples of concerns:
+- Score calculation
+- Weighting
+- Thresholds
+- Penalties
+- Double counting
+- Missing important conditions
+- Misleading conditions
+- Whether snapshot data is sufficient for the conclusion
 
-- Containers repeatedly restarting
-- Containers unexpectedly stopped
-- Very high CPU or memory consumption
-- Large numbers of long-stopped containers
-- Large unused or dangling images
-- Large unused volumes
-- Docker storage consuming excessive disk
-- Large reclaimable storage
-- One server significantly different from others
+If the server is classified as:
 
-IMPORTANT:
+    HEALTHY
+    WARNING
+    CRITICAL
 
-Do not invent a health formula simply because one does not exist.
+the user should be able to understand WHY.
 
-If the current application cannot reliably produce an overall Docker health status, say so.
+Example:
 
-Recommend the MINIMUM improvement required.
+    Health Score: 75
+        ↓
+    Failed Services: -20
+    Swap Concern: -5
+
+Do not accept an unexplained score.
+
+If the score is technically weak or misleading, identify it as a Friday priority.
+
+Do not redesign the complete health model unless necessary.
+
+Recommend the minimum correction required.
 
 --------------------------------------------------
 4. CONCERN → EVIDENCE → POSSIBLE ACTION
 --------------------------------------------------
 
-For every concern displayed by the application, test whether this chain exists:
+For every concern currently shown, test whether this chain exists:
 
     CONCERN
         ↓
@@ -167,114 +190,268 @@ For every concern displayed by the application, test whether this chain exists:
         ↓
     WHAT ARE REASONABLE NEXT STEPS?
 
-Example:
+Examples:
 
     Concern:
-    12 stopped containers
+    4 Failed Services
 
     Evidence:
-    Container names
-    Server
-    Status
-    Created date
-    Last known running information, if available
-    Associated image
-    Associated volume, if available
+    Service names
+    Current states
+    Available failure context
 
     Possible next steps:
-    - Confirm application ownership
-    - Confirm whether the container is still required
-    - Check dependent volumes
-    - Remove only after verification
+    - Review service status
+    - Determine whether the service is still required
+    - Investigate the failure
+    - Restart only after understanding the cause
 
 Another example:
 
     Concern:
-    Docker storage is consuming 420 GB
+    Large dormant storage
 
     Evidence:
-    Images: X GB
-    Containers: X GB
-    Volumes: X GB
-    Build cache: X GB
+    Directory path
+    Size
+    Last modified information
+    Disk tree
 
     Possible next steps:
-    - Review largest consumers
-    - Identify unused images
-    - Verify unused volumes
-    - Consider cleanup after ownership validation
+    - Review largest dormant candidates
+    - Confirm ownership
+    - Check contents
+    - Archive or clean only after validation
 
-Do not add these examples blindly.
+Another example:
+
+    Concern:
+    Python consuming 72 GB RAM
+
+    Evidence:
+    PID
+    User
+    Command
+    Working directory, if available
+
+    Possible next steps:
+    - Identify workload/application
+    - Confirm whether usage is expected
+    - Investigate abnormal consumption if unexpected
+
+Do not blindly add these examples.
 
 Verify what the current data can actually support.
 
 --------------------------------------------------
-5. CROSS-SERVER VALUE
+5. STRICT INFORMATION-DEPTH TEST
 --------------------------------------------------
 
-A major purpose of this application is to provide consolidated visibility across multiple servers.
+For every major concern, apply:
 
-Evaluate whether the current Docker view answers:
-
-    Which server needs attention?
-
-    Why does that server need attention?
-
-    What Docker resources are responsible?
-
-The user should ideally be able to move from:
-
-    ALL SERVERS
+    SUMMARY
         ↓
-    SERVER WITH CONCERN
+    FIRST NATURAL QUESTION
         ↓
-    SPECIFIC DOCKER ISSUE
+    SECOND NATURAL QUESTION
+
+Examples:
+
+    Disk usage is high
+        → Where is the space?
+        → What is inside the large directory?
+
+    3.1 TB is dormant
+        → Which folders?
+        → What is inside them?
+
+    Python uses 72 GB
+        → Which process?
+        → What is it actually running?
+
+    278 ports are listening
+        → Which ports?
+        → What process/service appears to own them?
+
+    4 services failed
+        → Which services?
+        → What failure context is available?
+
+For Friday, identify only the IMPORTANT cases where the current application stops too early.
+
+Do not attempt to solve every theoretical follow-up question.
+
+--------------------------------------------------
+6. STORAGE AND CLEANUP READINESS
+--------------------------------------------------
+
+Storage is an important part of the Friday demonstration.
+
+Evaluate whether the current application can answer:
+
+    How much disk is used?
+
+    Where is the space going?
+
+    Which directories are the largest?
+
+    Which large directories appear dormant?
+
+    Can I inspect what is inside them?
+
+    Is there enough evidence to identify review candidates?
+
+Be especially strict about:
+
+- Dormant calculations
+- Directory counts
+- Size calculations
+- 30D / 90D / 180D logic
+- Whether nested directories cause double counting
+- Whether "unused" is an accurate label
+- Whether age alone is being treated as proof of safe deletion
+- Disk Tree correctness
+- Collection performance
+
+The application must NOT claim:
+
+    SAFE TO DELETE
+
+unless sufficient evidence genuinely exists.
+
+Prefer:
+
+    Dormant
+    Review Candidate
+    Potentially Inactive
+
+The useful flow is:
+
+    STORAGE CONCERN
         ↓
-    AFFECTED RESOURCE
+    WHERE?
+        ↓
+    WHICH DIRECTORY?
+        ↓
+    WHAT IS INSIDE IT?
         ↓
     POSSIBLE NEXT STEP
 
-Determine whether this currently works.
-
 --------------------------------------------------
-6. PORTAINER BOUNDARY
+7. PROCESS AND SERVICE READINESS
 --------------------------------------------------
 
-This application should NOT duplicate Portainer unnecessarily.
+Evaluate whether resource-consuming processes can be investigated sufficiently.
 
-For every proposed improvement, ask:
+Example:
 
-    Is this needed to understand the estate and identify concerns?
+    Python — 72 GB
+
+should ideally allow the user to understand:
+
+    Which PID?
+    Which user?
+    Which command?
+
+And, where already available or cheaply derivable:
+
+    Which working directory?
+    Which service/container?
+    Which port?
+
+Do not require every possible process field.
+
+Determine the minimum information needed to make the current process data useful.
+
+Do the same for:
+
+- CPU consumers
+- Memory consumers
+- GPU consumers
+- Failed services
+
+--------------------------------------------------
+8. NETWORK / PORTS / DATABASES
+--------------------------------------------------
+
+Evaluate these sections based on actual decision value.
+
+For Listening Ports:
+
+    Does the current data tell us more than simply "278 ports exist"?
+
+    Can we identify:
+    - Port
+    - PID
+    - Process
+    - User
+    - Command, where available?
+
+Do NOT introduce:
+
+- eBPF
+- Packet inspection
+- Protocol fingerprinting
+- Long-term activity tracking
+
+For Connections:
+
+Determine whether the current metrics provide useful health or investigative value.
+
+If not, say so.
+
+Do not automatically recommend adding more connection metrics.
+
+For Databases:
+
+Determine whether the current view answers:
+
+    Which databases exist?
+    Where/how are they running?
+
+Do not turn this into database performance monitoring.
+
+--------------------------------------------------
+9. POSSIBLE NEXT STEPS
+--------------------------------------------------
+
+The application should not merely say:
+
+    GOOD
 
 or:
 
-    Is this operational container management better left to Portainer?
+    BAD
 
-Metrics Hub should focus on:
+For meaningful concerns, evaluate whether it can provide safe, useful next-step guidance.
 
-- Consolidated visibility
-- Cross-server understanding
-- Health/efficiency assessment
-- Identification of concerns
-- Evidence
-- Prioritized investigation
-- Possible next steps
+Examples of next-step categories:
 
-Container lifecycle operations such as:
+    INVESTIGATE
+    VERIFY
+    REVIEW OWNERSHIP
+    CHECK DEPENDENCIES
+    MONITOR
+    CONSIDER CLEANUP
+    CONSIDER CAPACITY ACTION
 
-- Start
-- Stop
-- Delete
-- Recreate
-- Edit configuration
+Recommendations must be proportional to the evidence.
 
-should not be introduced merely to compete with Portainer.
+Do not recommend destructive action based on weak evidence.
+
+The application may say:
+
+    Review this 420 GB directory.
+    Last modification observed 241 days ago.
+    Confirm ownership and contents before cleanup.
+
+It should not automatically say:
+
+    Delete this directory.
 
 --------------------------------------------------
-7. FRIDAY PRESENTATION READINESS
+10. FRIDAY PRESENTATION READINESS
 --------------------------------------------------
-
-Evaluate whether the current Docker capability is ready to demonstrate.
 
 Classify every issue as:
 
@@ -282,31 +459,55 @@ BLOCKER
 - Incorrect or misleading data
 - Broken calculation
 - Broken UI
-- A conclusion unsupported by evidence
-- A key demo flow that does not work
+- Unsupported health conclusion
+- A critical demo flow that fails
 
 MUST FIX BEFORE FRIDAY
 - Important clarity issue
 - Missing drill-down required to explain a major concern
 - Incorrect label
+- Health-score inconsistency
+- Storage calculation issue
 - Data inconsistency
-- Cross-server aggregation problem
 
 NICE TO HAVE
 - Useful but not required for the presentation
 
 AFTER FRIDAY
-- Larger enhancement
 - New collector
-- Major architecture change
-- Advanced intelligence
+- Advanced monitoring
+- Historical intelligence
+- Major navigation redesign
+- Large architectural changes
 
 Be strict.
 
 Do not classify everything as a blocker.
 
 --------------------------------------------------
-8. REQUIRED OUTPUT
+11. TAB / NAVIGATION SCOPE
+--------------------------------------------------
+
+The Server Health page is growing.
+
+The existing plan discusses a possible structure:
+
+    Overview
+    Processes & Services
+    Storage
+    Network & Databases
+
+For this Friday readiness review:
+
+- Evaluate whether the current long page harms the demonstration.
+- Do NOT automatically recommend implementing tabs before Friday.
+- If the current page remains usable for the demo, defer navigation restructuring.
+- If page length materially prevents users from understanding the application, explain the minimum safe improvement.
+
+Do not introduce a risky UI restructuring solely for presentation polish.
+
+--------------------------------------------------
+12. REQUIRED OUTPUT
 --------------------------------------------------
 
 Produce:
@@ -315,13 +516,13 @@ A. EXECUTIVE VERDICT
 
 Answer directly:
 
-    Can the current Docker application tell us:
-    - Are we good or not good?
+    Can the current Server Health application tell us:
+    - Is the server good or not good?
     - What is concerning?
     - Why is it concerning?
     - What can we reasonably do next?
 
-Rate each question:
+Rate each:
 
     YES
     PARTIALLY
@@ -329,13 +530,27 @@ Rate each question:
 
 Explain why.
 
-B. METRIC VALIDATION TABLE
+B. HEALTH MODEL VALIDATION
+
+Review:
+
+    Health Score
+    Health Status
+    Score deductions
+    Thresholds
+    Weighting
+    Potential double counting
+    Unsupported conclusions
+
+State whether the current overall health assessment is trustworthy.
+
+C. METRIC VALIDATION TABLE
 
 For every major current metric:
 
-| Metric | Calculation Correct? | Label Accurate? | Decision Value | Concern Drill-Down Available? | Actionable? | Issue |
+| Metric | Calculation Correct? | Label Accurate? | Health/Decision Value | Drill-Down Available? | Actionable? | Issue |
 
-C. CURRENT CONCERNS MODEL
+D. CURRENT CONCERNS MODEL
 
 List the concerns the current application can reliably identify today.
 
@@ -343,13 +558,16 @@ For each:
 
 | Concern | Evidence Available | Confidence | Possible Next Steps |
 
-D. MISSING CRITICAL CONTEXT
+E. INFORMATION DEPTH GAPS
 
-Identify only the missing information that prevents a current metric or concern from being understood.
+Identify only important cases where:
 
-Do not produce a feature wishlist.
+    Summary exists
+    but evidence or context is insufficient.
 
-E. FRIDAY FIX LIST
+Do not produce a broad feature wishlist.
+
+F. FRIDAY FIX LIST
 
 Provide a strict list:
 
@@ -358,22 +576,24 @@ Provide a strict list:
     NICE TO HAVE
     AFTER FRIDAY
 
-F. DEMO STORY
+G. DEMO STORY
 
-Based on the actual current application, propose a short demonstration flow:
+Based on the actual application and actual available data, propose a short demonstration flow:
 
-    Estate Summary
+    Server Health
         ↓
-    Identify Server/Area of Concern
+    Identify Concern
         ↓
     Show Evidence
+        ↓
+    Drill Down
         ↓
     Explain Possible Next Step
 
 Use actual capabilities found in the application.
 
 --------------------------------------------------
-9. EXECUTION GATE
+13. EXECUTION GATE
 --------------------------------------------------
 
 THIS TASK IS ANALYSIS ONLY.
@@ -385,8 +605,9 @@ Do not:
 - Refactor
 - Install dependencies
 - Change calculations
-- Change the UI
+- Change UI
 - Add collectors
+- Implement tabs
 
 Inspect the actual implementation and produce the review.
 
@@ -398,7 +619,7 @@ The goal for Friday is:
 
     TRUSTWORTHY DATA
         +
-    CLEAR HEALTH / EFFICIENCY SIGNAL
+    CLEAR HEALTH SIGNAL
         +
     IDENTIFIABLE CONCERNS
         +
