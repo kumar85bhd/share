@@ -1,630 +1,427 @@
-You are acting as a Senior Linux Systems Engineer, DevOps Engineer, SRE, and Product Reviewer.
+# Server Health Product Review Tracker
 
-Review the CURRENT Server Health capability in Metrics Hub as if it must be presented to technical stakeholders this Friday.
+> **Objective**
+>
+> Server Health should help a DevOps engineer or manager answer:
+> 1. Is this server healthy?
+> 2. If not, what is concerning?
+> 3. Why is it concerning?
+> 4. Where should I investigate first?
+> 5. What are the possible next steps?
+>
+> **Scope:** Version 1.0 (Friday Demo)
+>
+> **Rule:** Focus on improving operational decision making, not adding more metrics.
 
-Before starting, read and follow:
+---
 
-@docs/plans/SERVER_HEALTH_INFORMATION_DEPTH_PLAN.md
+# SH-001 - Landing Page (Overview)
 
-Use that document as the governing product principle.
+## Purpose
 
-This is a FOCUSED READINESS REVIEW.
+Within **15 seconds**, the user should understand:
 
-Do NOT redesign the application.
-Do NOT implement anything.
-Do NOT create a broad future roadmap.
-Do NOT attempt to compete feature-for-feature with Netdata, Beszel, Cockpit, or ManageEngine.
+- Is the server healthy?
+- What is wrong?
+- What deserves attention first?
+- Where should I click?
 
-Inspect the actual:
+---
 
-- Frontend implementation
-- Backend implementation
-- Server collector
-- Current JSON/data schema
-- Metric calculations
-- Health score logic
-- Classification rules
-- UI labels and explanations
+## P0 - Must Fix
 
-The application must answer three primary questions:
+### SH-001.1 - Health Score Transparency
 
-    1. IS MY SERVER GOOD OR NOT GOOD?
+**Problem**
 
-    2. IF NOT GOOD, WHAT EXACTLY IS CONCERNING?
+Current Health Score feels like a black box.
 
-    3. FOR EACH CONCERN, WHAT ARE REASONABLE NEXT STEPS?
+Users should immediately understand why the score is 75.
 
-The review must determine whether the current application genuinely answers these questions using trustworthy evidence.
+**Required Change**
 
-The governing information-depth model remains:
+- Improve Health Score explanation.
+- Display penalty breakdown clearly.
+- Every deduction must be understandable and defensible.
 
-    SUMMARY
-        ↓
-    EVIDENCE
-        ↓
-    CONTEXT
+**Decision Enabled**
 
-For Friday, focus on whether this chain works for the IMPORTANT current metrics.
+"I understand why this server is Warning."
 
-Do not attempt to make every metric perfect.
+---
 
---------------------------------------------------
-1. PRIMARY PRODUCT TEST
---------------------------------------------------
+### SH-001.2 - Reduce False Confidence
 
-A user looking at a server should be able to understand:
+**Problem**
 
-    CURRENT SERVER STATE
-        ↓
-    HEALTH ASSESSMENT
-        ↓
-    CONCERNS
-        ↓
-    EVIDENCE
-        ↓
-    POSSIBLE NEXT STEPS
+Current wording makes conclusions stronger than the available evidence.
 
-Example:
+Examples:
 
-    Health Score: 75 — Warning
-        ↓
-    Why?
-        ↓
-    4 failed services
-    High swap usage
-        ↓
-    Which services?
-    What is the swap situation?
-        ↓
-    Relevant evidence
-        ↓
-    Possible next steps
+- Possible Leak
+- Unused
+- Dormant
 
-The application should not jump directly from:
+**Required Change**
 
-    Metric
-        ↓
-    Destructive action
+Review all warning labels.
 
-It should provide enough evidence for investigation.
+Prefer wording such as:
 
---------------------------------------------------
-2. STRICTLY VALIDATE CURRENT HEALTH METRICS
---------------------------------------------------
+- Review Recommended
+- Potential Cleanup Candidate
+- Higher Than Expected
+- Inactive
+- Needs Investigation
 
-Review every currently displayed Server Health metric.
+Only state conclusions that the collected data can actually support.
 
-For each metric, determine:
+**Decision Enabled**
 
-1. What does it claim to tell the user?
-2. Is the underlying calculation technically correct?
-3. Is the label accurate?
-4. Is the threshold reasonable?
-5. Does the metric represent a snapshot or a historical conclusion?
-6. Is the application accidentally presenting snapshot data as long-term evidence?
-7. Can the user determine whether the result is healthy or concerning?
-8. If concerning, can the user identify the cause?
-9. Is there enough context to investigate?
-10. Are possible next steps reasonable?
+"I understand what is suspected versus what is proven."
 
-Pay particular attention to current areas such as:
+---
 
-- Overall Health Score
-- Health Score deductions
-- CPU
-- Memory
-- Swap
-- Disk
-- System Load
+### SH-001.3 - Separate Health from Inventory
+
+**Problem**
+
+Health indicators and inventory information are mixed together.
+
+Examples:
+
 - Failed Services
-- GPU
-- Top CPU Processes
-- Top Memory Processes
-- Connections
+- Ports
 - Databases
+- GPUs
+- Dormant Storage
+
+These represent different concepts.
+
+**Required Change**
+
+Clearly separate:
+
+- Health
+- Concerns
+- Inventory
+- Navigation
+
+The landing page should focus on health.
+
+Inventory should support investigation.
+
+**Decision Enabled**
+
+"I immediately know what requires attention."
+
+---
+
+### SH-001.4 - Clarify Summary Metrics
+
+**Problem**
+
+Some counts are ambiguous.
+
+Examples:
+
+- Databases Detected
 - Listening Ports
-- Largest Directories
-- Largest Files
-- Dormant Directories
-- Disk Tree, if already implemented
 
-Only review what actually exists.
+Users cannot determine what is actually being counted.
 
-Do not assume all of the above are implemented.
+**Required Change**
 
---------------------------------------------------
-3. TEST THE "GOOD OR NOT GOOD" QUESTION
---------------------------------------------------
+Review every summary metric.
 
-Determine whether the current overall Health Score and status genuinely answer:
+Ensure labels clearly explain what is being measured.
 
-    Is this server healthy?
+**Decision Enabled**
 
-Validate:
+"I trust the numbers shown."
 
-- Score calculation
-- Weighting
-- Thresholds
-- Penalties
-- Double counting
-- Missing important conditions
-- Misleading conditions
-- Whether snapshot data is sufficient for the conclusion
+---
 
-If the server is classified as:
+## P1 - Improve
 
-    HEALTHY
-    WARNING
-    CRITICAL
+### SH-001.5 - Investigation Priority
 
-the user should be able to understand WHY.
+**Problem**
+
+The page shows warnings but does not clearly indicate where the user should start.
+
+**Required Change**
+
+Landing page should naturally answer:
+
+"What should I investigate first?"
+
+Without requiring the user to inspect every widget.
+
+**Decision Enabled**
+
+"I know my next action."
+
+---
+
+# SH-002 - Storage
+
+## Purpose
+
+User should answer:
+
+- Where is storage being used?
+- What appears unusual?
+- What should be investigated first?
+- What are the best cleanup candidates?
+
+---
+
+## P0 - Must Fix
+
+### SH-002.1 - Separate Local Storage from External Mounts
+
+**Problem**
+
+External mounts are mixed with local filesystem usage.
+
+This makes storage totals appear inconsistent and reduces confidence.
+
+**Required Change**
+
+Present local filesystem usage separately from external mounts.
 
 Example:
 
-    Health Score: 75
-        ↓
-    Failed Services: -20
-    Swap Concern: -5
+Local Filesystem
 
-Do not accept an unexplained score.
+External Mounts
 
-If the score is technically weak or misleading, identify it as a Friday priority.
+Do not combine unrelated storage totals.
 
-Do not redesign the complete health model unless necessary.
+**Decision Enabled**
 
-Recommend the minimum correction required.
+"I trust the reported storage usage."
 
---------------------------------------------------
-4. CONCERN → EVIDENCE → POSSIBLE ACTION
---------------------------------------------------
+---
 
-For every concern currently shown, test whether this chain exists:
+### SH-002.2 - Redesign Disk Tree
 
-    CONCERN
-        ↓
-    WHAT EXACTLY IS AFFECTED?
-        ↓
-    WHY IS IT CONSIDERED A CONCERN?
-        ↓
-    WHAT EVIDENCE SUPPORTS THAT?
-        ↓
-    WHAT ARE REASONABLE NEXT STEPS?
+**Problem**
 
-Examples:
+Current Disk Tree is only a first-level folder listing.
 
-    Concern:
-    4 Failed Services
+It does not support investigation.
 
-    Evidence:
-    Service names
-    Current states
-    Available failure context
+**Required Change**
 
-    Possible next steps:
-    - Review service status
-    - Determine whether the service is still required
-    - Investigate the failure
-    - Restart only after understanding the cause
+Redesign Disk Tree to behave like:
 
-Another example:
+- TreeSize
+- WinDirStat
+- ncdu
+- Windows Explorer
 
-    Concern:
-    Large dormant storage
-
-    Evidence:
-    Directory path
-    Size
-    Last modified information
-    Disk tree
-
-    Possible next steps:
-    - Review largest dormant candidates
-    - Confirm ownership
-    - Check contents
-    - Archive or clean only after validation
-
-Another example:
-
-    Concern:
-    Python consuming 72 GB RAM
-
-    Evidence:
-    PID
-    User
-    Command
-    Working directory, if available
-
-    Possible next steps:
-    - Identify workload/application
-    - Confirm whether usage is expected
-    - Investigate abnormal consumption if unexpected
-
-Do not blindly add these examples.
-
-Verify what the current data can actually support.
-
---------------------------------------------------
-5. STRICT INFORMATION-DEPTH TEST
---------------------------------------------------
-
-For every major concern, apply:
-
-    SUMMARY
-        ↓
-    FIRST NATURAL QUESTION
-        ↓
-    SECOND NATURAL QUESTION
-
-Examples:
-
-    Disk usage is high
-        → Where is the space?
-        → What is inside the large directory?
-
-    3.1 TB is dormant
-        → Which folders?
-        → What is inside them?
-
-    Python uses 72 GB
-        → Which process?
-        → What is it actually running?
-
-    278 ports are listening
-        → Which ports?
-        → What process/service appears to own them?
-
-    4 services failed
-        → Which services?
-        → What failure context is available?
-
-For Friday, identify only the IMPORTANT cases where the current application stops too early.
-
-Do not attempt to solve every theoretical follow-up question.
-
---------------------------------------------------
-6. STORAGE AND CLEANUP READINESS
---------------------------------------------------
-
-Storage is an important part of the Friday demonstration.
-
-Evaluate whether the current application can answer:
-
-    How much disk is used?
-
-    Where is the space going?
-
-    Which directories are the largest?
-
-    Which large directories appear dormant?
-
-    Can I inspect what is inside them?
-
-    Is there enough evidence to identify review candidates?
-
-Be especially strict about:
-
-- Dormant calculations
-- Directory counts
-- Size calculations
-- 30D / 90D / 180D logic
-- Whether nested directories cause double counting
-- Whether "unused" is an accurate label
-- Whether age alone is being treated as proof of safe deletion
-- Disk Tree correctness
-- Collection performance
-
-The application must NOT claim:
-
-    SAFE TO DELETE
-
-unless sufficient evidence genuinely exists.
-
-Prefer:
-
-    Dormant
-    Review Candidate
-    Potentially Inactive
-
-The useful flow is:
-
-    STORAGE CONCERN
-        ↓
-    WHERE?
-        ↓
-    WHICH DIRECTORY?
-        ↓
-    WHAT IS INSIDE IT?
-        ↓
-    POSSIBLE NEXT STEP
-
---------------------------------------------------
-7. PROCESS AND SERVICE READINESS
---------------------------------------------------
-
-Evaluate whether resource-consuming processes can be investigated sufficiently.
+Support progressive expansion into subdirectories.
 
 Example:
 
-    Python — 72 GB
+home
+ └── user
+      ├── models
+      ├── projects
+      ├── datasets
 
-should ideally allow the user to understand:
+Focus on investigation rather than reporting.
 
-    Which PID?
-    Which user?
-    Which command?
+**Decision Enabled**
 
-And, where already available or cheaply derivable:
+"I can quickly identify exactly where storage is being consumed."
 
-    Which working directory?
-    Which service/container?
-    Which port?
+---
 
-Do not require every possible process field.
+## P1 - Improve
 
-Determine the minimum information needed to make the current process data useful.
+### SH-002.3 - Largest Directories
 
-Do the same for:
+**Problem**
 
-- CPU consumers
-- Memory consumers
-- GPU consumers
-- Failed services
+Top-level folders such as /home provide little value.
 
---------------------------------------------------
-8. NETWORK / PORTS / DATABASES
---------------------------------------------------
+**Required Change**
 
-Evaluate these sections based on actual decision value.
+Automatically drill one level deeper where appropriate.
 
-For Listening Ports:
+Display actionable directories rather than generic root folders.
 
-    Does the current data tell us more than simply "278 ports exist"?
+**Decision Enabled**
 
-    Can we identify:
-    - Port
-    - PID
-    - Process
-    - User
-    - Command, where available?
+"I immediately know which directory deserves attention."
 
-Do NOT introduce:
+---
 
-- eBPF
-- Packet inspection
-- Protocol fingerprinting
-- Long-term activity tracking
+### SH-002.4 - Folder Age Categories
 
-For Connections:
+**Problem**
 
-Determine whether the current metrics provide useful health or investigative value.
+Current categories:
 
-If not, say so.
+- 30+
+- 90+
+- 180+
 
-Do not automatically recommend adding more connection metrics.
+contain overlapping data.
 
-For Databases:
+This creates duplicate information.
 
-Determine whether the current view answers:
+**Required Change**
 
-    Which databases exist?
-    Where/how are they running?
+Replace with mutually exclusive ranges.
 
-Do not turn this into database performance monitoring.
+Example:
 
---------------------------------------------------
-9. POSSIBLE NEXT STEPS
---------------------------------------------------
+- 0–30
+- 31–90
+- 91–180
+- 180+
 
-The application should not merely say:
+**Decision Enabled**
 
-    GOOD
+"I can understand directory age without duplicated information."
 
-or:
+---
 
-    BAD
+### SH-002.5 - Merge Dormant Directory Lists
 
-For meaningful concerns, evaluate whether it can provide safe, useful next-step guidance.
+**Problem**
 
-Examples of next-step categories:
+Three nearly identical dormant directory tables are displayed.
 
-    INVESTIGATE
-    VERIFY
-    REVIEW OWNERSHIP
-    CHECK DEPENDENCIES
-    MONITOR
-    CONSIDER CLEANUP
-    CONSIDER CAPACITY ACTION
+**Required Change**
 
-Recommendations must be proportional to the evidence.
+Merge into a single table.
 
-Do not recommend destructive action based on weak evidence.
+Suggested columns:
 
-The application may say:
+- Directory
+- Size
+- Age
+- Owner
+- Last Modified
 
-    Review this 420 GB directory.
-    Last modification observed 241 days ago.
-    Confirm ownership and contents before cleanup.
+Allow sorting and filtering instead of duplication.
 
-It should not automatically say:
+**Decision Enabled**
 
-    Delete this directory.
+"I have one authoritative list of dormant directories."
 
---------------------------------------------------
-10. FRIDAY PRESENTATION READINESS
---------------------------------------------------
+---
 
-Classify every issue as:
+### SH-002.6 - Improve Home Directory Analysis
 
-BLOCKER
-- Incorrect or misleading data
-- Broken calculation
-- Broken UI
-- Unsupported health conclusion
-- A critical demo flow that fails
+**Problem**
 
-MUST FIX BEFORE FRIDAY
-- Important clarity issue
-- Missing drill-down required to explain a major concern
-- Incorrect label
-- Health-score inconsistency
-- Storage calculation issue
-- Data inconsistency
+Showing one user consuming 1.5 TB does not explain why.
 
-NICE TO HAVE
-- Useful but not required for the presentation
+**Required Change**
 
-AFTER FRIDAY
-- New collector
-- Advanced monitoring
-- Historical intelligence
-- Major navigation redesign
-- Large architectural changes
+Break user storage into meaningful categories.
 
-Be strict.
+Examples:
 
-Do not classify everything as a blocker.
+- Models
+- Projects
+- Git
+- Datasets
+- Cache
+- Downloads
 
---------------------------------------------------
-11. TAB / NAVIGATION SCOPE
---------------------------------------------------
+Explain why storage is high.
 
-The Server Health page is growing.
+**Decision Enabled**
 
-The existing plan discusses a possible structure:
+"I understand what is consuming the user's storage."
 
-    Overview
-    Processes & Services
-    Storage
-    Network & Databases
+---
 
-For this Friday readiness review:
+## P2 - Future Enhancement
 
-- Evaluate whether the current long page harms the demonstration.
-- Do NOT automatically recommend implementing tabs before Friday.
-- If the current page remains usable for the demo, defer navigation restructuring.
-- If page length materially prevents users from understanding the application, explain the minimum safe improvement.
+### SH-002.7 - Classify Largest Files
 
-Do not introduce a risky UI restructuring solely for presentation polish.
+Instead of listing filenames only,
 
---------------------------------------------------
-12. REQUIRED OUTPUT
---------------------------------------------------
+group them into categories such as:
 
-Produce:
+- Python Packages
+- CUDA
+- Models
+- Logs
+- Archives
 
-A. EXECUTIVE VERDICT
+This provides more useful operational context.
 
-Answer directly:
+---
 
-    Can the current Server Health application tell us:
-    - Is the server good or not good?
-    - What is concerning?
-    - Why is it concerning?
-    - What can we reasonably do next?
+### SH-002.8 - Cleanup Candidates
 
-Rate each:
+Introduce a dedicated Cleanup Candidates section.
 
-    YES
-    PARTIALLY
-    NO
+Rank items using:
 
-Explain why.
+- Size
+- Age
+- File Type
+- Confidence
 
-B. HEALTH MODEL VALIDATION
+Do not recommend deletion.
 
-Review:
+Recommend investigation.
 
-    Health Score
-    Health Status
-    Score deductions
-    Thresholds
-    Weighting
-    Potential double counting
-    Unsupported conclusions
+Example:
 
-State whether the current overall health assessment is trustworthy.
+CUDA Cache
 
-C. METRIC VALIDATION TABLE
+14 GB
 
-For every major current metric:
+240 Days
 
-| Metric | Calculation Correct? | Label Accurate? | Health/Decision Value | Drill-Down Available? | Actionable? | Issue |
+High Confidence
 
-D. CURRENT CONCERNS MODEL
+Review for Cleanup
 
-List the concerns the current application can reliably identify today.
+**Decision Enabled**
 
-For each:
+"I know which cleanup opportunities deserve review."
 
-| Concern | Evidence Available | Confidence | Possible Next Steps |
+---
 
-E. INFORMATION DEPTH GAPS
+# Version 1.0 Scope
 
-Identify only important cases where:
+## Implement
 
-    Summary exists
-    but evidence or context is insufficient.
+- All P0 items
+- All P1 items
 
-Do not produce a broad feature wishlist.
+## Do NOT Implement
 
-F. FRIDAY FIX LIST
+- Historical trending
+- AI recommendations
+- Automated cleanup
+- Predictive analysis
+- Additional charts
+- More metrics without decision value
+- Large UI redesign outside reviewed components
 
-Provide a strict list:
+---
 
-    BLOCKER
-    MUST FIX
-    NICE TO HAVE
-    AFTER FRIDAY
+# Guiding Principle
 
-G. DEMO STORY
+Every widget should answer:
 
-Based on the actual application and actual available data, propose a short demonstration flow:
+1. Why does this exist?
+2. What operational decision does it support?
+3. Can the displayed data support that decision?
+4. Can the user investigate further if needed?
+5. Does it guide the user toward a reasonable next step?
 
-    Server Health
-        ↓
-    Identify Concern
-        ↓
-    Show Evidence
-        ↓
-    Drill Down
-        ↓
-    Explain Possible Next Step
-
-Use actual capabilities found in the application.
-
---------------------------------------------------
-13. EXECUTION GATE
---------------------------------------------------
-
-THIS TASK IS ANALYSIS ONLY.
-
-Do not:
-
-- Modify files
-- Write code
-- Refactor
-- Install dependencies
-- Change calculations
-- Change UI
-- Add collectors
-- Implement tabs
-
-Inspect the actual implementation and produce the review.
-
-Be critical but practical.
-
-The goal is not perfection.
-
-The goal for Friday is:
-
-    TRUSTWORTHY DATA
-        +
-    CLEAR HEALTH SIGNAL
-        +
-    IDENTIFIABLE CONCERNS
-        +
-    ENOUGH EVIDENCE TO EXPLAIN THEM
-        +
-    REASONABLE NEXT STEPS
-
-STOP after producing the review.
+If a widget cannot answer these questions, it should be reconsidered.
